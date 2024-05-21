@@ -1,4 +1,6 @@
 html, body{
+    color:white;
+    font-family: Arial, Helvetica, sans-serif;
     /* Height and width fallback for older browsers. */
     height: 100%;
     width: 100%;
@@ -11,20 +13,19 @@ html, body{
 
     /* Remove any browser-default margins. */
     margin: 0;
-    background-image: url('images/painting-mountain-lake-with-mountain-background.jpg');
+    background-image: url('images/sunrise-5992075_1280.jpg');
     background-size: cover;
     background-repeat: no-repeat;
-
-
-
-.container{
-    display:grid;
-    grid-template-columns:1fr 1fr 40px 20%;
-    grid-template-rows:100px 200px 100px;
-  
 }
 
 
+.container {
+  text-align: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
+  grid-template-rows: 100px 200px 100px; /* Three rows with specified heights */
+  gap: 10px; /* Optional: Add spacing between items */
+}
 
 /* nav */
 nav, ul, li{
@@ -77,8 +78,47 @@ li,span{
     margin-left: 50px;
   }
   
-  
   @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
   }
+
+
+/* Timer section */
+.session{
+  text-align: center;
+  min-height:100%;
+  margin:2% 5%;
+  float:left;
+}
+
+
+.session:hover{
+  text-shadow: 0 0 10px #ffffff;
+}
+
+
+.time{
+  font-size: 30pt;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.minus, .plus, .timer {
+  cursor: pointer;
+}
+
+.timer{
+  font-size: 50pt;
+}
+.timer:hover{
+  text-shadow: 0 0 15px lightblue;
+}
+
+
+
+.center-container{
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 60pt;
+}
+

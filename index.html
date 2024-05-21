@@ -12,22 +12,35 @@
         <!-- Animated Side navigation-->
         <div id="sidenav" class="sidenav">
             <a href="#" class="closebtn" onclick="closeNav()"><i class="fa-solid fa-x"></i></a>
-            <p>FAQ 1</p>
-            <p>FAQ 2</p>
-            <p>FAQ 3</p>
+            <h4>What is app?</h4>
+            <p> This is a place for you to do nothing for a bit, when you start the timer,
+                you should not press any keys or move the mouse, or else the timer will end and restart.
+                Living in a world filled with so much stimulation, it's so difficult to stop and do nothing
+                to allow brains to just flow, so set up the time, click on the timer and just sit there. Let your
+                mind wander. 
+            </p>
         </div>
         <!-- Navbar -->
         <nav>
             <ul>
                 <li><i class="fa-solid fa-circle-info" onclick="openNav()"></i></li>
-                <li><i class="fa-solid fa-mountain-sun"></i> </li>
             </ul>
         </nav>
         <!-- Center part-->
-        <div>
+        <div class="center-container">
             <!-- Title-->
             <h1>~Do Nothing For A Bit~</h1>
-            <!-- Timer part -->
+            <!-- Timer section  -->
+            <!-- Timer set up -->
+            <div class='session'>
+                <p class="title">Session Length</p>
+                <p>
+                <span class='minus'><i class="fa-solid fa-minus"></i></span>
+                <span class='time'>25</span>
+                <span class='plus'><i class="fa-solid fa-plus"></i></span>
+                </p>
+            </div>
+            <p class="timer onSession"> 25:00 </p>
         </div>
     </div>
 
