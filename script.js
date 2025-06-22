@@ -1,137 +1,78 @@
-function openNav() {
-    document.getElementById("sidenav").style.width = "250px";
-  }
-  
-  function closeNav() {
-    document.getElementById("sidenav").style.width = "0";
-  }
+/* ---------- 1. NAV ---------- */
+function openNav()  { document.getElementById("sidenav").style.width = "250px"; }
+function closeNav() { document.getElementById("sidenav").style.width = "0";  }
 
+/* ---------- 2. DOM refs ---------- */
+const timer = document.querySelector(".timer");
+const minus = document.querySelector(".minus");
+const plus  = document.querySelector(".plus");
+const timeSession = document.querySelector(".session .time");
+let   timeFocus   = timeSession;
 
+/* ---------- 3. Globals ---------- */
+let timeInterval = null;   // use null, not ""
+let timeRemaining;
 
-/* ---------------------------- Timer ---------------------------*/
-
-/* DOM objects */
-let timer = document.querySelector('.timer');
-let minus = document.querySelector('.minus');
-let plus = document.querySelector('.plus');
-
-let timeSession = document.querySelector('.session .time');
-let timeFocus = timeSession;
-
-/* Timer operations */
-// Global Variables
-var timeInterval = '';
-var timeRemaining = '';
-
-//Functions
+/* ---------- 4.  CLICK-HANDLERS ---------- */
 function addClickEvents() {
-    eventsTimeChange();
-    eventsTimer();
+  minus.addEventListener("click", () => { if (!timeInterval) { changeTime(-1); } });
+  plus .addEventListener("click", () => { if (!timeInterval) { changeTime(+1); } });
+  timer.addEventListener("click", toggleTimer);
 }
 
-/* eventsTimeChange: Adds click events to plus and minus buttons to adjust the break and session lengths.
- */
-function eventsTimeChange() {
-    minus.addEventListener('click', function () {
-        if (timeInterval) {
-            return;
-        }
-        subtractTime(this);
-        initializeCountdown();
-    });
-
-    plus.addEventListener('click', function () {
-        if (timeInterval) {
-            return;
-        }
-        addTime(this);
-        initializeCountdown();
-    });
+function changeTime(delta) {
+  const newVal = Math.max(1, parseInt(timeFocus.textContent) + delta);
+  timeFocus.textContent = newVal;
+  timer.textContent     = `${newVal}:00`;
 }
 
-/* subtractTime:
-Input ~ a minus element
-Reduces the associated timer length element by one minute. If timer changed is the current timer, changes timer value to match.
-*/
-function subtractTime(element) {
-    let text = parseInt(element.nextElementSibling.innerHTML);
-    text = text - 1;
-    element.nextElementSibling.innerHTML = text > 0 ? text : '1';
-    timer.innerHTML = timeFocus.innerHTML + ':00';
-}
-
-/* addTime:
-Input ~ a plus element
-Increases the associated timer length element by one minute. If timer changed is the current timer, changes timer value to match.
-*/
-function addTime(element) {
-    let text = parseInt(element.previousElementSibling.innerHTML);
-    text = text + 1;
-    element.previousElementSibling.innerHTML = text;
-    timer.innerHTML = timeFocus.innerHTML + ':00';
-}
-
-/* eventsTimer: Adds click events to the timer for start/pause functionality.
- */
-function eventsTimer() {
-    timer.addEventListener('click', function () {
-        toggleTimer();
-    });
-}
-
-/* toggleTimer: Switches the timer state between play/pause states.
- */
-function toggleTimer() {
-    if (!timeRemaining) {
-        initializeCountdown();
-    }
-    if (timeInterval) {
-        clearInterval(timeInterval);
-        timeInterval = '';
-    } else {
-        timeInterval = setInterval(updateDisplay, 1000);
-    }
-}
-
-/* timerCountdown: Countdown timer functionality.
- */
-function initializeCountdown() {
-    timeRemaining = {
-        total: parseInt(timeFocus.innerHTML) * 60 * 1000,
-        minutes: parseInt(timeFocus.innerHTML),
-        seconds: 0,
-    };
-}
-
-/* updateDisplay: Updates the value of the timer to reflect timeRemaining.
-*/
-function updateDisplay() {
-    var t = timeRemaining.total - 1000;
-
-    if (t < 1000) {
-        toggleTimer();
-        setTimeout(timerSwitch, 100);
-        return;
-    }
-
-    timeRemaining.total = t;
-    timeRemaining.minutes = Math.floor((t / 1000 / 60) % 60);
-    timeRemaining.seconds = Math.floor((t / 1000) % 60);
-    var seconds = ('0' + timeRemaining.seconds).slice(-2);
-    timer.innerHTML = timeRemaining.minutes + ":" + seconds;
-}
-
-/* timerSwitch: Toggles timer between break and session states.
- */
-function timerSwitch() {
-    timer.classList.toggle('onBreak');
-    timeFocus = timeFocus == timeSession ? timeBreak : timeSession;
-    timer.innerHTML = timeFocus.innerHTML + ':00';
+/* ---------- 5.  USER-ACTIVITY LISTENERS ---------- */
+function resetOnInteraction() {
+  if (timeInterval) {               // only if timer is actively running
+    clearInterval(timeInterval);
     initializeCountdown();
-    toggleTimer();
+    updateDisplay();                // <-- repaint immediately
+    timeInterval = setInterval(updateDisplay, 1000);
+  }
 }
 
-// Add the click events when the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-    addClickEvents();
+function addUserActivityListeners() {
+  document.addEventListener("keydown",   resetOnInteraction);
+  document.addEventListener("pointerdown", resetOnInteraction); // fires once per click/tap
+  /*  If you *really* want mouse-move, throttle it: 
+      document.addEventListener("mousemove", _.throttle(resetOnInteraction, 500));
+      (Needs lodash or your own throttle util)
+  */
+}
+
+/* ---------- 6.  TIMER CORE ---------- */
+function initializeCountdown() {
+  const mins = parseInt(timeFocus.textContent);
+  timeRemaining = { total: mins * 60 * 1000, minutes: mins, seconds: 0 };
+}
+
+function updateDisplay() {
+  timeRemaining.total -= 1000;
+  if (timeRemaining.total < 0) { toggleTimer(); return; }
+
+  timeRemaining.minutes = Math.floor(timeRemaining.total / 60000);
+  timeRemaining.seconds = Math.floor((timeRemaining.total % 60000) / 1000);
+  const s = String(timeRemaining.seconds).padStart(2, "0");
+  timer.textContent = `${timeRemaining.minutes}:${s}`;
+}
+
+function toggleTimer() {
+  if (!timeRemaining) initializeCountdown();
+  if (timeInterval) {
+    clearInterval(timeInterval);
+    timeInterval = null;
+  } else {
+    timeInterval = setInterval(updateDisplay, 1000);
+  }
+}
+
+/* ---------- 7.  DOM READY ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  addClickEvents();
+  addUserActivityListeners();
 });
